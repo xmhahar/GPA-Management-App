@@ -1,0 +1,140 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+students = []
+
+def calculate_gpa(mark):
+    if mark >= 80:
+        return 4.0
+    elif mark >= 70:
+        return 3.0
+    elif mark >= 60:
+        return 2.0
+    elif mark >= 50:
+        return 1.0
+    else:
+        return 0.0
+
+def add_student():
+    name = entry_name.get()
+
+    try:
+        ca = float(entry_ca.get())
+        math = float(entry_math.get())
+        prog = float(entry_prog.get())
+    except ValueError:
+        messagebox.showerror("Error", "Enter valid numbers!")
+        return
+
+    gpa = (calculate_gpa(ca) + calculate_gpa(math) + calculate_gpa(prog)) / 3
+
+    tree.insert("", tk.END, values=(name, ca, math, prog, round(gpa, 2)))
+    clear_fields()
+
+# Clear fields
+def clear_fields():
+    entry_name.delete(0, tk.END)
+    entry_ca.delete(0, tk.END)
+    entry_math.delete(0, tk.END)
+    entry_prog.delete(0, tk.END)
+
+# Delete student
+def delete_student():
+    selected = tree.selection()
+    if not selected:
+        messagebox.showwarning("Warning", "Select a student")
+        return
+    for item in selected:
+        tree.delete(item)
+
+# Hover effect
+def on_enter(e):
+    e.widget['background'] = '#45a049'
+
+def on_leave(e):
+    e.widget['background'] = '#4CAF50'
+
+# Main window
+root = tk.Tk()
+root.title("🎓 GPA System")
+root.geometry("800x550")
+root.configure(bg="#e3f2fd")  # soft blue background
+
+# ===== Title =====
+tk.Label(root, text="GPA Management System",
+         font=("Segoe UI", 20, "bold"),
+         bg="#e3f2fd", fg="#0d47a1").pack(pady=15)
+
+# ===== Card Frame =====
+card = tk.Frame(root, bg="white", bd=0, relief="ridge")
+card.pack(pady=10, padx=20, fill="x")
+
+# Input fields
+tk.Label(card, text="Student Name", bg="white").grid(row=0, column=0, padx=10, pady=10)
+entry_name = tk.Entry(card, width=25)
+entry_name.grid(row=0, column=1)
+
+tk.Label(card, text="Computer Architecture", bg="white").grid(row=1, column=0, padx=10, pady=10)
+entry_ca = tk.Entry(card, width=15)
+entry_ca.grid(row=1, column=1)
+
+tk.Label(card, text="Mathematics", bg="white").grid(row=2, column=0, padx=10, pady=10)
+entry_math = tk.Entry(card,width=15)
+entry_math.grid(row=2, column=1)
+
+tk.Label(card, text="C Programming", bg="white").grid(row=3, column=0, padx=10, pady=10)
+entry_prog = tk.Entry(card, width=15)
+entry_prog.grid(row=3, column=1)
+
+# ===== Buttons =====
+btn_frame = tk.Frame(root, bg="#e3f2fd")
+btn_frame.pack(pady=20)
+
+btn_add = tk.Button(btn_frame, text="Add Student",
+                    bg="#4CAF50", fg="white",
+                    font=("Segoe UI", 10, "bold"),
+                    width=15, command=add_student)
+btn_add.grid(row=0, column=0, padx=10)
+
+btn_add.bind("<Enter>", on_enter)
+btn_add.bind("<Leave>", on_leave)
+
+tk.Button(btn_frame, text="Clear",
+          bg="#2196F3", fg="white",
+          width=15, command=clear_fields).grid(row=0, column=1, padx=10)
+
+tk.Button(btn_frame, text="Delete",
+          bg="#f44336", fg="white",
+          width=15, command=delete_student).grid(row=0, column=2, padx=10)
+
+# ===== Table =====
+table_frame = tk.Frame(root)
+table_frame.pack(padx=20, pady=10, fill="both", expand=True)
+
+columns = ("Name", "CA", "Math", "C Programming", "GPA")
+
+style = ttk.Style()
+style.theme_use("default")
+
+style.configure("Treeview",
+                background="white",
+                foreground="black",
+                rowheight=30,
+                fieldbackground="white")
+
+style.map('Treeview', background=[('selected', '#90caf9')])
+
+tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+
+for col in columns:
+    tree.heading(col, text=col)
+    tree.column(col, anchor="center")
+
+tree.pack(fill="both", expand=True)
+
+# Scrollbar
+scroll = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
+tree.configure(yscroll=scroll.set)
+scroll.pack(side="right", fill="y")
+
+root.mainloop()
