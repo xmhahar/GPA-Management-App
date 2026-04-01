@@ -31,14 +31,12 @@ def add_student():
     tree.insert("", tk.END, values=(name, ca, math, prog, round(gpa, 2)))
     clear_fields()
 
-# Clear fields
 def clear_fields():
     entry_name.delete(0, tk.END)
     entry_ca.delete(0, tk.END)
     entry_math.delete(0, tk.END)
     entry_prog.delete(0, tk.END)
 
-# Delete student
 def delete_student():
     selected = tree.selection()
     if not selected:
@@ -47,7 +45,6 @@ def delete_student():
     for item in selected:
         tree.delete(item)
 
-# Hover effect
 def on_enter(e):
     e.widget['background'] = '#45a049'
 
@@ -58,9 +55,8 @@ def on_leave(e):
 root = tk.Tk()
 root.title("🎓 GPA System")
 root.geometry("800x550")
-root.configure(bg="#e3f2fd")  # soft blue background
+root.configure(bg="#e3f2fd")  
 
-# ===== Title =====
 tk.Label(root, text="GPA Management System",
          font=("Segoe UI", 20, "bold"),
          bg="#e3f2fd", fg="#0d47a1").pack(pady=15)
