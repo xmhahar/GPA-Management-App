@@ -1,47 +1,56 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-students = []
+def calculate_gpa(total_score):
+    max_score = 800
 
-def calculate_gpa(mark):
-    if mark >= 80:
-        return 4.0
-    elif mark >= 70:
-        return 3.0
-    elif mark >= 60:
-        return 2.0
-    elif mark >= 50:
-        return 1.0
-    else:
-        return 0.0
+    gpa = (total_score / max_score) * 4
+
+    return round(gpa, 2)
 
 def add_student():
     name = entry_name.get()
 
     try:
-        ca = float(entry_ca.get())
+        rla = float(entry_rla.get())
+        science = float(entry_sc.get())
         math = float(entry_math.get())
-        prog = float(entry_prog.get())
+        social = float(entry_ss.get())
+
     except ValueError:
-        messagebox.showerror("Error", "Enter valid numbers!")
+        messagebox.showerror("Error", "Please enter valid numbers!")
         return
 
-    gpa = (calculate_gpa(ca) + calculate_gpa(math) + calculate_gpa(prog)) / 3
+    # Total score
+    total = rla + science + math + social
 
-    tree.insert("", tk.END, values=(name, ca, math, prog, round(gpa, 2)))
+    # GPA
+    gpa = calculate_gpa(total)
+
+    # Insert into table
+    tree.insert(
+        "",
+        tk.END,
+        values=(name, rla, science, math, social, total, gpa)
+    )
+
     clear_fields()
+
 
 def clear_fields():
     entry_name.delete(0, tk.END)
-    entry_ca.delete(0, tk.END)
+    entry_rla.delete(0, tk.END)
+    entry_sc.delete(0, tk.END)
     entry_math.delete(0, tk.END)
-    entry_prog.delete(0, tk.END)
+    entry_ss.delete(0, tk.END)
 
 def delete_student():
     selected = tree.selection()
+
     if not selected:
-        messagebox.showwarning("Warning", "Select a student")
+        messagebox.showwarning("Warning", "Select a student!")
         return
+
     for item in selected:
         tree.delete(item)
 
@@ -51,86 +60,175 @@ def on_enter(e):
 def on_leave(e):
     e.widget['background'] = '#4CAF50'
 
-# Main window
 root = tk.Tk()
-root.title("🎓 GPA System")
-root.geometry("800x550")
-root.configure(bg="#e3f2fd")  
+root.title("🎓 GED GPA Management System")
+root.geometry("900x600")
+root.configure(bg="#e3f2fd")
 
-tk.Label(root, text="GPA Management System",
-         font=("Segoe UI", 20, "bold"),
-         bg="#e3f2fd", fg="#0d47a1").pack(pady=15)
+title = tk.Label(
+    root,
+    text="GED GPA Management System",
+    font=("Segoe UI", 22, "bold"),
+    bg="#e3f2fd",
+    fg="#0d47a1"
+)
 
-# ===== Card Frame =====
-card = tk.Frame(root, bg="white", bd=0, relief="ridge")
-card.pack(pady=10, padx=20, fill="x")
+title.pack(pady=15)
 
-# Input fields
-tk.Label(card, text="Student Name", bg="white").grid(row=0, column=0, padx=10, pady=10)
+card = tk.Frame(root, bg="white")
+card.pack(padx=20, pady=10, fill="x")
+
+# Student Name
+tk.Label(
+    card,
+    text="Student Name",
+    bg="white",
+    font=("Segoe UI", 10)
+).grid(row=0, column=0, padx=10, pady=10)
+
 entry_name = tk.Entry(card, width=25)
 entry_name.grid(row=0, column=1)
 
-tk.Label(card, text="Computer Architecture", bg="white").grid(row=1, column=0, padx=10, pady=10)
-entry_ca = tk.Entry(card, width=15)
-entry_ca.grid(row=1, column=1)
+# RLA
+tk.Label(
+    card,
+    text="RLA",
+    bg="white",
+    font=("Segoe UI", 10)
+).grid(row=1, column=0, padx=10, pady=10)
 
-tk.Label(card, text="Mathematics", bg="white").grid(row=2, column=0, padx=10, pady=10)
-entry_math = tk.Entry(card,width=15)
-entry_math.grid(row=2, column=1)
+entry_rla = tk.Entry(card, width=15)
+entry_rla.grid(row=1, column=1)
 
-tk.Label(card, text="C Programming", bg="white").grid(row=3, column=0, padx=10, pady=10)
-entry_prog = tk.Entry(card, width=15)
-entry_prog.grid(row=3, column=1)
+# Science
+tk.Label(
+    card,
+    text="Science",
+    bg="white",
+    font=("Segoe UI", 10)
+).grid(row=2, column=0, padx=10, pady=10)
 
-# ===== Buttons =====
+entry_sc = tk.Entry(card, width=15)
+entry_sc.grid(row=2, column=1)
+
+# Mathematics
+tk.Label(
+    card,
+    text="Mathematics",
+    bg="white",
+    font=("Segoe UI", 10)
+).grid(row=3, column=0, padx=10, pady=10)
+
+entry_math = tk.Entry(card, width=15)
+entry_math.grid(row=3, column=1)
+
+# Social Studies
+tk.Label(
+    card,
+    text="Social Studies",
+    bg="white",
+    font=("Segoe UI", 10)
+).grid(row=4, column=0, padx=10, pady=10)
+
+entry_ss = tk.Entry(card, width=15)
+entry_ss.grid(row=4, column=1)
+
 btn_frame = tk.Frame(root, bg="#e3f2fd")
 btn_frame.pack(pady=20)
 
-btn_add = tk.Button(btn_frame, text="Add Student",
-                    bg="#4CAF50", fg="white",
-                    font=("Segoe UI", 10, "bold"),
-                    width=15, command=add_student)
+# Add Button
+btn_add = tk.Button(
+    btn_frame,
+    text="Add Student",
+    bg="#4CAF50",
+    fg="white",
+    font=("Segoe UI", 10, "bold"),
+    width=15,
+    command=add_student
+)
+
 btn_add.grid(row=0, column=0, padx=10)
 
 btn_add.bind("<Enter>", on_enter)
 btn_add.bind("<Leave>", on_leave)
 
-tk.Button(btn_frame, text="Clear",
-          bg="#2196F3", fg="white",
-          width=15, command=clear_fields).grid(row=0, column=1, padx=10)
+btn_clear = tk.Button(
+    btn_frame,
+    text="Clear",
+    bg="#2196F3",
+    fg="white",
+    width=15,
+    command=clear_fields
+)
+btn_clear.grid(row=0, column=1, padx=10)
 
-tk.Button(btn_frame, text="Delete",
-          bg="#f44336", fg="white",
-          width=15, command=delete_student).grid(row=0, column=2, padx=10)
+btn_delete = tk.Button(
+    btn_frame,
+    text="Delete",
+    bg="#f44336",
+    fg="white",
+    width=15,
+    command=delete_student
+)
 
-# ===== Table =====
+btn_delete.grid(row=0, column=2, padx=10)
+
+#  TABLE 
 table_frame = tk.Frame(root)
 table_frame.pack(padx=20, pady=10, fill="both", expand=True)
 
-columns = ("Name", "CA", "Math", "C Programming", "GPA")
+columns = (
+    "Name",
+    "RLA",
+    "Science",
+    "Math",
+    "Social",
+    "Total",
+    "GPA"
+)
 
 style = ttk.Style()
 style.theme_use("default")
 
-style.configure("Treeview",
-                background="white",
-                foreground="black",
-                rowheight=30,
-                fieldbackground="white")
+style.configure(
+    "Treeview",
+    background="white",
+    foreground="black",
+    rowheight=30,
+    fieldbackground="white",
+    font=("Segoe UI", 10)
+)
 
-style.map('Treeview', background=[('selected', '#90caf9')])
+style.configure(
+    "Treeview.Heading",
+    font=("Segoe UI", 10, "bold")
+)
 
-tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+style.map(
+    "Treeview",
+    background=[('selected', '#90caf9')]
+)
+
+tree = ttk.Treeview(
+    table_frame,
+    columns=columns,
+    show="headings"
+)
 
 for col in columns:
     tree.heading(col, text=col)
-    tree.column(col, anchor="center")
+    tree.column(col, anchor="center", width=100)
 
-tree.pack(fill="both", expand=True)
+tree.pack(side="left", fill="both", expand=True)
 
-# Scrollbar
-scroll = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
-tree.configure(yscroll=scroll.set)
-scroll.pack(side="right", fill="y")
+scrollbar = ttk.Scrollbar(
+    table_frame,
+    orient="vertical",
+    command=tree.yview
+)
+
+tree.configure(yscroll=scrollbar.set)
+
+scrollbar.pack(side="right", fill="y")
 
 root.mainloop()
